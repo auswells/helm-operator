@@ -313,10 +313,20 @@ next:
 		logger.Log("info", "running installation", "phase", action)
 		newRel, err = r.install(client, hr, chart, values)
 		if err != nil {
+
 			logger.Log("error", err, "phase", action)
 			errs = append(errs, err)
-
-			action = UninstallAction
+			logger.Log("warning", "Skipping uninstall on failed installation")
+			action = SkipAction
+			
+			// if err.Error() == "cannot re-use a name that is still in use" {
+			// 	logger.Log("warning", "release already exists for", hr.GetReleaseName(), " skipping uninstall")
+			// 	action = SkipAction
+			// } else {
+			// 	logger.Log("error", err, "phase", action)
+			// 	errs = append(errs, err)
+			// 	action = UninstallAction
+			// }
 			goto next
 		}
 
